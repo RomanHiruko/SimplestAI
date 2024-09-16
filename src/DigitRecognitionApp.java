@@ -7,7 +7,7 @@ public class DigitRecognitionApp {
     private DigitDrawPanel drawPanel;
     private JLabel predictionLabel; // Метка для отображения предсказания
     private int[] layers = {784, 128, 64, 10};
-    private double learningRate = 0.001;
+    private double learningRate = 0.05;
     private NeuralNetwork neuralNetwork = new NeuralNetwork(layers, learningRate);
 
     public DigitRecognitionApp() {

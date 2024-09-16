@@ -27,8 +27,10 @@ public class NeuralNetwork {
     // Прямое распространение связей
     public double[] forwardPropagation(double[] input) {
 
-        // Функция активации взвешенной суммы
-        UnaryOperator<Double> sigmoid = x -> 1 / (1 + Math.exp(-x));
+        // Функция активации взвешенной суммы сигмоида
+        UnaryOperator<Double> activation = x -> 1 / (1 + Math.exp(-x));
+        // ReLU
+        //UnaryOperator<Double> activation = x -> Math.max(0, x);
 
         neurals = new double[layersLength][];
         for (int k = 0; k < layersLength; k++) {
@@ -44,7 +46,7 @@ public class NeuralNetwork {
                     neurals[k][i] += weights[k - 1][i * prevLayerNeurons  + j] * neurals[k - 1][j];
                 }
                 System.out.println("Ответ до функции активации нейрона " + (i + 1) + ": " + neurals[k][i]);
-                neurals[k][i] = sigmoid.apply(neurals[k][i] + 0.01);
+                neurals[k][i] = activation.apply(neurals[k][i] + 0.01);
                 System.out.println("Ответ после функции активации нейрона " + (i + 1) + ": " + neurals[k][i]);
             }
         }
