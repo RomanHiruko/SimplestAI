@@ -1,15 +1,13 @@
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class DigitRecognitionApp {
     private DigitDrawPanel drawPanel;
     private JLabel predictionLabel; // Метка для отображения предсказания
-    private int[] layers = {784, 16, 10};
-    private double learningRate = 0.1;
+    private int[] layers = {784, 128, 64, 10};
+    private double learningRate = 0.001;
     private NeuralNetwork neuralNetwork = new NeuralNetwork(layers, learningRate);
 
     public DigitRecognitionApp() {
@@ -33,7 +31,7 @@ public class DigitRecognitionApp {
         predictButton.addActionListener(e -> predictDigit());
         frame.add(predictButton, BorderLayout.EAST);
 
-        // Правильные ответы
+        // Панель для правильных ответов (кнопки от 0 до 9)
         JPanel jPanel = new JPanel(new GridLayout(1, 10));
         for (int i = 0; i < 10; i++) {
             JButton button = new JButton(i + "");
@@ -41,8 +39,32 @@ public class DigitRecognitionApp {
             jPanel.add(button);
         }
         frame.add(jPanel, BorderLayout.SOUTH);
+
+        // Установка Key Bindings для клавиш 0-9
+        setupKeyBindings(frame.getRootPane());
+
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private void setupKeyBindings(JComponent component) {
+        // Настройка биндингов для клавиш 0-9
+        for (int i = 0; i <= 9; i++) {
+            int digit = i;
+            String key = "digit" + digit;
+
+            // InputMap связывает нажатие клавиши с названием команды
+            component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                    .put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + digit, 0), key);
+
+            // ActionMap связывает команду с действием
+            component.getActionMap().put(key, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getRightAnswer(digit); // вызываем обработку правильного ответа
+                }
+            });
+        }
     }
 
     private void predictDigit() {
@@ -59,6 +81,7 @@ public class DigitRecognitionApp {
         double[] output = new double[10];
         output[button] = 1;
         neuralNetwork.backPropagation(output);
+        drawPanel.clear();
     }
 
     // Метод для получения индекса максимального значения в массиве
